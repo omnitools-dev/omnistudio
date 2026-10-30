@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniStudio - Web Utility Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Header / Navigation -->
+    <header class="bg-slate-800 border-b border-slate-700 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">✨</span>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">OmniStudio</h1>
+            </div>
+            
+            <!-- Admin Mode Toggle -->
+            <div>
+                <button id="adminToggleBtn" onclick="toggleAdminMode()" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition-all">
+                    <span id="adminIcon">🔒</span>
+                    <span id="adminText">Public Mode</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="max-w-6xl mx-auto px-4 flex space-x-2 border-t border-slate-700/50 py-2 overflow-x-auto">
+            <button onclick="switchTab('image')" id="tab-image" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white flex items-center space-x-2 transition">
+                <span>🖼️</span>
+                <span>Image Editor</span>
+            </button>
+            <button onclick="switchTab('pdf')" id="tab-pdf" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700/50 flex items-center space-x-2 transition">
+                <span>📄</span>
+                <span>PDF Tools</span>
+            </button>
+            <button onclick="switchTab('utilities')" id="tab-utilities" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700/50 flex items-center space-x-2 transition">
+                <span>🛠️</span>
+                <span>Daily Utilities</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- 1. IMAGE EDITOR SECTION -->
+        <section id="section-image" class="space-y-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl">
+                <h2 class="text-lg font-semibold mb-4 text-blue-400">Image Adjustments</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-slate-300">Upload Image</label>
+                        <input type="file" id="imageInput" accept="image/*" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                        <div>
+                            <label class="text-xs text-slate-400 flex justify-between mb-1"><span>Brightness</span><span id="valBrightness">100%</span></label>
+                            <input type="range" id="brightness" min="0" max="200" value="100" class="w-full accent-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 flex justify-between mb-1"><span>Contrast</span><span id="valContrast">100%</span></label>
+                            <input type="range" id="contrast" min="0" max="200" value="100" class="w-full accent-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 flex justify-between mb-1"><span>Grayscale</span><span id="valGrayscale">0%</span></label>
+                            <input type="range" id="grayscale" min="0" max="100" value="0" class="w-full accent-blue-500">
+                        </div>
+                    </div>
+
+                    <button onclick="downloadImage()" class="w-full mt-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-lg flex items-center justify-center space-x-2">
+                        <span>⬇️</span>
+                        <span>Download Image</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Box -->
+            <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 flex items-center justify-center min-h-[280px]">
+                <div id="imagePlaceholder" class="text-center text-slate-500">
+                    <span class="text-4xl block mb-2">☁️</span>
+                    <p class="text-sm">Upload an image to start editing</p>
+                </div>
+                <canvas id="imageCanvas" class="max-w-full max-h-[400px] hidden rounded-lg shadow-md"></canvas>
+            </div>
+        </section>
+
+        <!-- 2. PDF TOOLS SECTION -->
+        <section id="section-pdf" class="space-y-6 hidden">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl">
+                <h2 class="text-lg font-semibold mb-2 text-red-400">PDF Image Extractor / Viewer</h2>
+                <p class="text-sm text-slate-400 mb-4">Upload any PDF file to view info and manage pages quickly.</p>
+                
+                <input type="file" id="pdfInput" accept="application/pdf" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
+            </div>
+
+            <div id="pdfInfo" class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-6 hidden text-center space-y-3">
+                <span class="text-3xl">📄</span>
+                <h3 id="pdfFileName" class="font-semibold text-slate-200">filename.pdf</h3>
+                <p id="pdfFileSize" class="text-xs text-slate-400">Size: 0 KB</p>
+                <div class="inline-block px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/20 text-xs rounded-full">PDF Loaded Successfully</div>
+            </div>
+        </section>
+
+        <!-- 3. DAILY UTILITIES SECTION -->
+        <section id="section-utilities" class="space-y-6 hidden">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl">
+                <h2 class="text-lg font-semibold mb-2 text-emerald-400">QR Code Generator</h2>
+                <p class="text-sm text-slate-400 mb-4">Enter text or URL to generate instant QR code.</p>
+                
+                <div class="space-y-3">
+                    <input type="text" id="qrText" placeholder="Enter URL or Text..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:border-emerald-500 text-sm">
+                    <button onclick="generateQR()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition shadow-lg">Generate QR Code</button>
+                </div>
+            </div>
+
+            <div id="qrCodeContainer" class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-6 hidden flex flex-col items-center justify-center space-y-4">
+                <img id="qrImage" src="" alt="QR Code" class="rounded-xl shadow-md border border-slate-700 bg-white p-2">
+                <span class="text-xs text-slate-400">Scan code using phone camera</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        &copy; 2026 OmniStudio. All rights reserved.
+    </footer>
+
+    <!-- Script File -->
+    <script src="script.js"></script>
+</body>
+</html>
