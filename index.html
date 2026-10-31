@@ -1,138 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniStudio - Web Utility Platform</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniStudio - Pro Thumbnail Creator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#0B0F17',
+            panelDark: '#111827',
+            borderDark: '#1F293D',
+            gaming: '#EF4444',
+            food: '#F59E0B',
+            tech: '#3B82F6',
+            fitness: '#10B981',
+            finance: '#059669',
+            vlog: '#A855F7'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #0B0F17; color: #F3F4F6; font-family: 'Inter', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #111827; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1F293D; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #374151; }
+  </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <!-- Header / Navigation -->
-    <header class="bg-slate-800 border-b border-slate-700 shadow-md">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <span class="text-2xl">✨</span>
-                <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">OmniStudio</h1>
-            </div>
-            
-            <!-- Admin Mode Toggle -->
-            <div>
-                <button id="adminToggleBtn" onclick="toggleAdminMode()" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition-all">
-                    <span id="adminIcon">🔒</span>
-                    <span id="adminText">Public Mode</span>
-                </button>
-            </div>
+  <!-- TOP BAR / HEADER -->
+  <header class="h-14 bg-panelDark border-b border-borderDark flex items-center justify-between px-4 z-20">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center font-bold text-white shadow-lg">
+        O
+      </div>
+      <span class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">OmniStudio</span>
+      <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/50">1080p Engine Active</span>
+    </div>
+
+    <!-- TUTORIAL VIDEO GUIDES BUTTONS -->
+    <div class="hidden md:flex items-center gap-2">
+      <span class="text-xs text-gray-400 mr-1"><i class="fa-solid fa-circle-play text-red-500 mr-1"></i> Video Guides:</span>
+      <button onclick="openVideoModal('Gaming Pro Tutorial', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="text-xs px-2.5 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition">🎮 Gaming</button>
+      <button onclick="openVideoModal('Food Vlogging Guide', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="text-xs px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">🍔 Food</button>
+      <button onclick="openVideoModal('Tech Review Polish', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="text-xs px-2.5 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition">📱 Tech</button>
+      <button onclick="openVideoModal('Fitness Transformation', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="text-xs px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">🏋️ Fitness</button>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="text-xs bg-slate-800 hover:bg-slate-700 text-white font-medium px-3 py-1.5 rounded cursor-pointer transition border border-gray-700">
+        <i class="fa-solid fa-upload mr-1"></i> Remix/Upload
+        <input type="file" id="uploadImage" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+      </label>
+      <button onclick="exportThumbnail()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded shadow-lg shadow-blue-600/30 transition flex items-center gap-1">
+        <i class="fa-solid fa-download"></i> Download 1080p
+      </button>
+      <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-1 rounded">4K (Soon)</span>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- LEFT SIDEBAR: CATEGORIES -->
+    <aside class="w-20 bg-panelDark border-r border-borderDark flex flex-col items-center py-4 gap-4 z-10">
+      <button onclick="setCategory('gaming')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-red-400 transition">
+        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-red-500/20 border border-gray-700 group-hover:border-red-500/50 flex items-center justify-center">
+          <i class="fa-solid fa-gamepad text-lg"></i>
         </div>
+        <span class="text-[10px]">Gaming</span>
+      </button>
 
-        <!-- Navigation Tabs -->
-        <nav class="max-w-6xl mx-auto px-4 flex space-x-2 border-t border-slate-700/50 py-2 overflow-x-auto">
-            <button onclick="switchTab('image')" id="tab-image" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white flex items-center space-x-2 transition">
-                <span>🖼️</span>
-                <span>Image Editor</span>
-            </button>
-            <button onclick="switchTab('pdf')" id="tab-pdf" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700/50 flex items-center space-x-2 transition">
-                <span>📄</span>
-                <span>PDF Tools</span>
-            </button>
-            <button onclick="switchTab('utilities')" id="tab-utilities" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700/50 flex items-center space-x-2 transition">
-                <span>🛠️</span>
-                <span>Daily Utilities</span>
-            </button>
-        </nav>
-    </header>
+      <button onclick="setCategory('food')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-amber-400 transition">
+        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-amber-500/20 border border-gray-700 group-hover:border-amber-500/50 flex items-center justify-center">
+          <i class="fa-solid fa-utensils text-lg"></i>
+        </div>
+        <span class="text-[10px]">Food</span>
+      </button>
 
-    <!-- Main Content Area -->
-    <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+      <button onclick="setCategory('tech')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-blue-400 transition">
+        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-blue-500/20 border border-gray-700 group-hover:border-blue-500/50 flex items-center justify-center">
+          <i class="fa-solid fa-mobile-screen-button text-lg"></i>
+        </div>
+        <span class="text-[10px]">Tech</span>
+      </button>
 
-        <!-- 1. IMAGE EDITOR SECTION -->
-        <section id="section-image" class="space-y-6">
-            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl">
-                <h2 class="text-lg font-semibold mb-4 text-blue-400">Image Adjustments</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-2 text-slate-300">Upload Image</label>
-                        <input type="file" id="imageInput" accept="image/*" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
-                    </div>
+      <button onclick="setCategory('fitness')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-emerald-400 transition">
+        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-emerald-500/20 border border-gray-700 group-hover:border-emerald-500/50 flex items-center justify-center">
+          <i class="fa-solid fa-dumbbell text-lg"></i>
+        </div>
+        <span class="text-[10px]">Fitness</span>
+      </button>
 
-                    <!-- Sliders -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                        <div>
-                            <label class="text-xs text-slate-400 flex justify-between mb-1"><span>Brightness</span><span id="valBrightness">100%</span></label>
-                            <input type="range" id="brightness" min="0" max="200" value="100" class="w-full accent-blue-500">
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 flex justify-between mb-1"><span>Contrast</span><span id="valContrast">100%</span></label>
-                            <input type="range" id="contrast" min="0" max="200" value="100" class="w-full accent-blue-500">
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 flex justify-between mb-1"><span>Grayscale</span><span id="valGrayscale">0%</span></label>
-                            <input type="range" id="grayscale" min="0" max="100" value="0" class="w-full accent-blue-500">
-                        </div>
-                    </div>
+      <button onclick="setCategory('vlog')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-purple-400 transition">
+        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-purple-500/20 border border-gray-700 group-hover:border-purple-500/50 flex items-center justify-center">
+          <i class="fa-solid fa-camera text-lg"></i>
+        </div>
+        <span class="text-[10px]">Vlog</span>
+      </button>
+    </aside>
 
-                    <button onclick="downloadImage()" class="w-full mt-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-lg flex items-center justify-center space-x-2">
-                        <span>⬇️</span>
-                        <span>Download Image</span>
-                    </button>
-                </div>
-            </div>
+    <!-- CENTER CANVAS EDITOR -->
+    <main class="flex-1 bg-brandDark p-6 flex flex-col items-center justify-center relative overflow-auto">
+      <!-- CANVAS CONTROLS -->
+      <div class="mb-3 flex items-center gap-3 bg-panelDark px-4 py-2 rounded-lg border border-borderDark text-xs">
+        <button onclick="addText()" class="hover:text-cyan-400 transition"><i class="fa-solid fa-font mr-1"></i> Add Text</button>
+        <span class="text-gray-600">|</span>
+        <button onclick="clearCanvas()" class="hover:text-red-400 transition"><i class="fa-solid fa-trash mr-1"></i> Clear All</button>
+      </div>
 
-            <!-- Preview Box -->
-            <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 flex items-center justify-center min-h-[280px]">
-                <div id="imagePlaceholder" class="text-center text-slate-500">
-                    <span class="text-4xl block mb-2">☁️</span>
-                    <p class="text-sm">Upload an image to start editing</p>
-                </div>
-                <canvas id="imageCanvas" class="max-w-full max-h-[400px] hidden rounded-lg shadow-md"></canvas>
-            </div>
-        </section>
-
-        <!-- 2. PDF TOOLS SECTION -->
-        <section id="section-pdf" class="space-y-6 hidden">
-            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl">
-                <h2 class="text-lg font-semibold mb-2 text-red-400">PDF Image Extractor / Viewer</h2>
-                <p class="text-sm text-slate-400 mb-4">Upload any PDF file to view info and manage pages quickly.</p>
-                
-                <input type="file" id="pdfInput" accept="application/pdf" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
-            </div>
-
-            <div id="pdfInfo" class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-6 hidden text-center space-y-3">
-                <span class="text-3xl">📄</span>
-                <h3 id="pdfFileName" class="font-semibold text-slate-200">filename.pdf</h3>
-                <p id="pdfFileSize" class="text-xs text-slate-400">Size: 0 KB</p>
-                <div class="inline-block px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/20 text-xs rounded-full">PDF Loaded Successfully</div>
-            </div>
-        </section>
-
-        <!-- 3. DAILY UTILITIES SECTION -->
-        <section id="section-utilities" class="space-y-6 hidden">
-            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl">
-                <h2 class="text-lg font-semibold mb-2 text-emerald-400">QR Code Generator</h2>
-                <p class="text-sm text-slate-400 mb-4">Enter text or URL to generate instant QR code.</p>
-                
-                <div class="space-y-3">
-                    <input type="text" id="qrText" placeholder="Enter URL or Text..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:border-emerald-500 text-sm">
-                    <button onclick="generateQR()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition shadow-lg">Generate QR Code</button>
-                </div>
-            </div>
-
-            <div id="qrCodeContainer" class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-6 hidden flex flex-col items-center justify-center space-y-4">
-                <img id="qrImage" src="" alt="QR Code" class="rounded-xl shadow-md border border-slate-700 bg-white p-2">
-                <span class="text-xs text-slate-400">Scan code using phone camera</span>
-            </div>
-        </section>
-
+      <!-- MAIN CANVAS CONTAINER -->
+      <div class="relative shadow-2xl rounded-lg overflow-hidden border border-borderDark bg-black" style="width: 854px; height: 480px;">
+        <canvas id="thumbnailCanvas" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
+      </div>
+      <p class="text-[11px] text-gray-500 mt-2">1080p High-Resolution Preview Rendered Live</p>
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-        &copy; 2026 OmniStudio. All rights reserved.
-    </footer>
+    <!-- RIGHT SIDEBAR: REALISTIC 3D ASSETS SEARCH -->
+    <aside class="w-80 bg-panelDark border-l border-borderDark flex flex-col custom-scrollbar overflow-y-auto p-4 z-10">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">3D Realistic Asset Library</h3>
+      
+      <!-- SEARCH BOX -->
+      <div class="relative mb-4">
+        <input type="text" id="assetSearch" oninput="filterAssets()" placeholder="Search 3D models, props, objects..." class="w-full bg-brandDark text-xs text-gray-200 pl-8 pr-3 py-2 rounded-lg border border-borderDark focus:outline-none focus:border-cyan-500 transition">
+        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-xs text-gray-500"></i>
+      </div>
 
-    <!-- Script File -->
-    <script src="script.js"></script>
-</body> <script data-cfasync="false" src="https://bicea.org/14/6d9af5d6a091636d4437fb21f88353c1"></script>
+      <!-- ASSETS GRID -->
+      <div id="assetsGrid" class="grid grid-cols-2 gap-2">
+        <!-- JS populates realistic assets here -->
+      </div>
+    </aside>
+  </div>
 
+  <!-- VIDEO MODAL -->
+  <div id="videoModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden">
+    <div class="bg-panelDark border border-borderDark rounded-xl w-11/12 max-w-3xl p-4 relative">
+      <button onclick="closeVideoModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <h3 id="modalTitle" class="text-sm font-bold text-white mb-3">Video Guide</h3>
+      <div class="aspect-video w-full rounded-lg overflow-hidden border border-borderDark">
+        <iframe id="modalIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('thumbnailCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Sample Assets Data
+    const assetData = [
+      { name: "3D Gaming Chair", cat: "gaming", url: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&auto=format&fit=crop&q=60" },
+      { name: "Gourmet Burger", cat: "food", url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop&q=60" },
+      { name: "Smartphone 3D", cat: "tech", url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&auto=format&fit=crop&q=60" },
+      { name: "3D Dumbbell", cat: "fitness", url: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=60" },
+      { name: "Neon Arrow", cat: "vlog", url: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&auto=format&fit=crop&q=60" }
+    ];
+
+    let currentBg = null;
+    let textElements = [];
+
+    function initCanvas() {
+      ctx.fillStyle = '#111827';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#374151';
+      ctx.font = 'bold 48px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('SELECT A CATEGORY OR UPLOAD AN IMAGE TO START', canvas.width / 2, canvas.height / 2);
+    }
+
+    function renderAssets(filter = "") {
+      const grid = document.getElementById('assetsGrid');
+      grid.innerHTML = "";
+      assetData.filter(a => a.name.toLowerCase().includes(filter.toLowerCase())).forEach(asset => {
+        const item = document.createElement('div');
+        item.className = "bg-brandDark border border-borderDark p-2 rounded-lg hover:border-cyan-500 cursor-pointer transition flex flex-col items-center";
+        item.onclick = () => addAssetToCanvas(asset.url);
+        item.innerHTML = `
+          <img src="${asset.url}" class="w-20 h-20 object-cover rounded mb-1">
+          <span class="text-[10px] text-gray-300 text-center truncate w-full">${asset.name}</span>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    function addAssetToCanvas(url) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        ctx.drawImage(img, 100, 100, 400, 400);
+      };
+      img.src = url;
+    }
+
+    function filterAssets() {
+      const query = document.getElementById('assetSearch').value;
+      renderAssets(query);
+    }
+
+    function setCategory(cat) {
+      const colors = {
+        gaming: '#EF4444',
+        food: '#F59E0B',
+        tech: '#3B82F6',
+        fitness: '#10B981',
+        vlog: '#A855F7'
+      };
+      ctx.fillStyle = '#0B0F17';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = colors[cat] || '#3B82F6';
+      ctx.font = 'bold 80px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(cat.toUpperCase() + ' THUMBNAIL STUDIO', canvas.width / 2, canvas.height / 2);
+    }
+
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addText() {
+      const text = prompt("Enter text:", "NEW VIDEO!");
+      if (!text) return;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 90px Inter, sans-serif';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 20;
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 100);
+      ctx.shadowBlur = 0;
+    }
+
+    function clearCanvas() {
+      initCanvas();
+    }
+
+    function exportThumbnail() {
+      const link = document.createElement('a');
+      link.download = 'OmniStudio-Thumbnail-1080p.png';
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+    }
+
+    function openVideoModal(title, url) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalIframe').src = url;
+      document.getElementById('videoModal').classList.remove('hidden');
+    }
+
+    function closeVideoModal() {
+      document.getElementById('modalIframe').src = "";
+      document.getElementById('videoModal').classList.add('hidden');
+    }
+
+    // Initialize on load
+    initCanvas();
+    renderAssets();
+  </script>
+</body>
 </html>
