@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>OmniStudio - Pro Mobile & Web Studio</title>
+  <title>OmniStudio - Pro Thumbnail Editor</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- Fabric.js for Real Canvas Manipulation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/531/fabric.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -22,10 +24,9 @@
     }
   </script>
   <style>
-    body { background-color: #0B0F17; color: #F3F4F6; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: #0B0F17; color: #F3F4F6; font-family: system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .canvas-container { aspect-ratio: 16/9; width: 100%; max-width: 960px; }
   </style>
 </head>
 <body class="h-screen flex flex-col justify-between overflow-hidden select-none">
@@ -38,238 +39,72 @@
       </div>
       <div>
         <h1 class="text-sm font-bold text-white leading-none">OmniStudio</h1>
-        <span class="text-[9px] text-cyan-400 font-medium">Ultra Thumbnail Studio</span>
+        <span class="text-[9px] text-cyan-400 font-medium">Pro Canvas Studio</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2">
       <label class="text-xs bg-gray-800 active:bg-gray-700 text-gray-200 px-2.5 py-1.5 rounded-lg border border-borderDark flex items-center gap-1 cursor-pointer">
         <i class="fa-solid fa-cloud-arrow-up text-cyan-400"></i>
-        <span>Remix Image</span>
+        <span>Upload</span>
         <input type="file" id="imageUploader" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
       </label>
       <button onclick="exportThumbnail()" class="text-xs bg-cyan-600 active:bg-cyan-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow-lg shadow-cyan-600/30 flex items-center gap-1">
-        <i class="fa-solid fa-download"></i> 1080p
+        <i class="fa-solid fa-download"></i> 1080p HD
       </button>
     </div>
   </header>
 
-  <!-- ACTUAL WORKING YOUTUBE GUIDES STRIP -->
-  <section class="bg-brandDark border-b border-borderDark p-2 overflow-x-auto no-scrollbar flex items-center gap-3 shrink-0">
-    <span class="text-[10px] uppercase font-bold text-gray-400 whitespace-nowrap pl-1"><i class="fa-solid fa-graduation-cap text-cyan-400 mr-1"></i> Studio Guides:</span>
-    
-    <div onclick="playGuide('How to Make Viral Thumbnails', 'https://www.youtube.com/embed/L3wKzyIN1yk')" class="flex-none bg-panelDark border border-borderDark rounded-md p-1 flex items-center gap-2 pr-3 cursor-pointer hover:border-cyan-500">
-      <div class="w-7 h-5 bg-red-600 rounded flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-play"></i></div>
-      <span class="text-xs text-gray-200 whitespace-nowrap">Thumbnail Design Basics</span>
-    </div>
-
-    <div onclick="playGuide('3D Lighting & Shadows Tutorial', 'https://www.youtube.com/embed/M5S_JBRyd2U')" class="flex-none bg-panelDark border border-borderDark rounded-md p-1 flex items-center gap-2 pr-3 cursor-pointer hover:border-cyan-500">
-      <div class="w-7 h-5 bg-red-600 rounded flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-play"></i></div>
-      <span class="text-xs text-gray-200 whitespace-nowrap">3D Asset Composition</span>
-    </div>
-
-    <div onclick="playGuide('High CTR Text & Color Tricks', 'https://www.youtube.com/embed/v82fNf11Csc')" class="flex-none bg-panelDark border border-borderDark rounded-md p-1 flex items-center gap-2 pr-3 cursor-pointer hover:border-cyan-500">
-      <div class="w-7 h-5 bg-red-600 rounded flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-play"></i></div>
-      <span class="text-xs text-gray-200 whitespace-nowrap">Pro Typography</span>
-    </div>
-  </section>
-
-  <!-- WORKSPACE / DYNAMIC CANVAS ENGINE -->
+  <!-- WORKSPACE / CANVAS AREA -->
   <main class="flex-1 bg-brandDark p-2 flex flex-col items-center justify-center relative overflow-hidden">
-    <!-- CANVAS DISPLAY -->
-    <div class="canvas-container bg-black rounded-lg border border-borderDark shadow-2xl overflow-hidden relative">
-      <canvas id="thumbnailCanvas" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
+    <div class="border border-borderDark rounded-lg shadow-2xl overflow-hidden bg-black relative" style="width: 100%; max-width: 800px; aspect-ratio: 16/9;">
+      <canvas id="thumbnailCanvas" width="1280" height="720"></canvas>
     </div>
 
-    <!-- TOUCH TOOLS -->
+    <!-- CANVAS TOOLS -->
     <div class="flex items-center gap-2 mt-3 flex-wrap justify-center">
-      <button onclick="addTextPrompt()" class="text-xs bg-panelDark border border-borderDark px-3 py-1.5 rounded-lg text-gray-200 active:bg-gray-800 flex items-center gap-1"><i class="fa-solid fa-font text-cyan-400"></i> Add Custom Text</button>
-      <button onclick="changeTextColor()" class="text-xs bg-panelDark border border-borderDark px-3 py-1.5 rounded-lg text-gray-200 active:bg-gray-800 flex items-center gap-1"><i class="fa-solid fa-palette text-amber-400"></i> Color</button>
-      <button onclick="clearCanvas()" class="text-xs bg-panelDark border border-borderDark px-3 py-1.5 rounded-lg text-gray-200 active:bg-gray-800 flex items-center gap-1"><i class="fa-solid fa-trash text-red-400"></i> Reset</button>
+      <button onclick="addText()" class="text-xs bg-panelDark border border-borderDark px-3 py-1.5 rounded-lg text-gray-200 active:bg-gray-800 flex items-center gap-1"><i class="fa-solid fa-font text-cyan-400"></i> Add Text</button>
+      <button onclick="deleteSelected()" class="text-xs bg-panelDark border border-borderDark px-3 py-1.5 rounded-lg text-red-400 active:bg-gray-800 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Delete Selected</button>
+      <button onclick="clearCanvas()" class="text-xs bg-panelDark border border-borderDark px-3 py-1.5 rounded-lg text-gray-400 active:bg-gray-800 flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset</button>
     </div>
   </main>
 
-  <!-- BOTTOM DRAWER (WORKING 3D ASSETS) -->
+  <!-- BOTTOM DRAWER: ASSET & SEARCH LIBRARY -->
   <div class="bg-panelDark border-t border-borderDark h-48 flex flex-col shrink-0">
-    <div class="p-2 border-b border-borderDark flex items-center justify-between gap-2">
+    <div class="p-2 border-b border-borderDark flex items-center gap-2">
       <div class="relative flex-1">
-        <input type="text" id="assetSearch" oninput="filterAssets()" placeholder="Search 3D models..." class="w-full bg-brandDark text-xs text-gray-200 pl-7 pr-3 py-1.5 rounded-md border border-borderDark focus:outline-none focus:border-cyan-500">
+        <input type="text" id="assetSearch" oninput="filterAssets()" placeholder="Search Goku, Gaming, Cars, Burger..." class="w-full bg-brandDark text-xs text-gray-200 pl-7 pr-3 py-1.5 rounded-md border border-borderDark focus:outline-none focus:border-cyan-500">
         <i class="fa-solid fa-magnifying-glass absolute left-2 top-2 text-[10px] text-gray-500"></i>
       </div>
-      <select id="catSelect" onchange="setCategoryPreset(this.value)" class="bg-brandDark text-xs text-cyan-400 px-2 py-1.5 rounded-md border border-borderDark focus:outline-none">
-        <option value="all">All Assets</option>
-        <option value="gaming">🎮 Gaming</option>
-        <option value="food">🍔 Food</option>
-        <option value="tech">📱 Tech</option>
-        <option value="fitness">🏋️ Fitness</option>
-      </select>
     </div>
 
     <div id="assetsGrid" class="flex-1 p-2 overflow-x-auto no-scrollbar flex items-center gap-3">
-      <!-- Dynamic Assets Load Here -->
-    </div>
-  </div>
-
-  <!-- VIDEO MODAL PLAYER -->
-  <div id="videoModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 hidden">
-    <div class="bg-panelDark border border-borderDark rounded-xl w-full max-w-lg p-3 relative">
-      <div class="flex items-center justify-between mb-2">
-        <h3 id="modalTitle" class="text-xs font-bold text-white">Guide Player</h3>
-        <button onclick="closeGuide()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
-      </div>
-      <div class="aspect-video w-full rounded-lg overflow-hidden bg-black">
-        <iframe id="modalIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
-      </div>
+      <!-- Dynamic Assets -->
     </div>
   </div>
 
   <script>
-    const canvas = document.getElementById('thumbnailCanvas');
-    const ctx = canvas.getContext('2d');
+    // Initialize Fabric Canvas (16:9 HD Ratio)
+    const canvas = new fabric.Canvas('thumbnailCanvas', {
+      backgroundColor: '#111827'
+    });
 
-    const assetsList = [
-      { name: "3D Gaming Setup", cat: "gaming", url: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&auto=format&fit=crop&q=80" },
-      { name: "Gourmet Burger", cat: "food", url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop&q=80" },
-      { name: "3D Smartphone", cat: "tech", url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&auto=format&fit=crop&q=80" },
-      { name: "Heavy Dumbbell", cat: "fitness", url: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=80" },
-      { name: "Neon Glow Arrow", cat: "gaming", url: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&auto=format&fit=crop&q=80" }
+    // Comprehensive Asset Library (Goku, Gaming, Food, Tech, Cars, Gym)
+    const dbAssets = [
+      { name: "Goku Super Saiyan", query: "goku anime", url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500&auto=format&fit=crop&q=80" },
+      { name: "Anime Character", query: "anime warrior", url: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80" },
+      { name: "Gaming Setup RGB", query: "gaming pc", url: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=500&auto=format&fit=crop&q=80" },
+      { name: "Sports Car", query: "car super", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&auto=format&fit=crop&q=80" },
+      { name: "Gourmet Burger", query: "burger food", url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=80" },
+      { name: "Gym Dumbbell", query: "fitness gym", url: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500&auto=format&fit=crop&q=80" },
+      { name: "Neon Glow Arrow", query: "neon arrow", url: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&auto=format&fit=crop&q=80" },
+      { name: "Smartphone 3D", query: "tech phone", url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&auto=format&fit=crop&q=80" }
     ];
 
-    let currentBgImage = null;
-    let canvasText = "YOUR TITLE HERE";
-    let textColor = "#00F0FF";
-
-    function drawStudio() {
-      // Background
-      if (currentBgImage) {
-        ctx.drawImage(currentBgImage, 0, 0, canvas.width, canvas.height);
-      } else {
-        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        grad.addColorStop(0, '#0B0F17');
-        grad.addColorStop(1, '#111827');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Grid pattern
-        ctx.strokeStyle = '#1F293D';
-        ctx.lineWidth = 2;
-        for(let i=0; i<canvas.width; i+=120) {
-          ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-        }
-      }
-
-      // Title Text
-      if (canvasText) {
-        ctx.fillStyle = textColor;
-        ctx.font = '900 110px system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.shadowColor = 'rgba(0,0,0,0.9)';
-        ctx.shadowBlur = 25;
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = '#000000';
-        ctx.strokeText(canvasText, canvas.width / 2, canvas.height / 2);
-        ctx.fillText(canvasText, canvas.width / 2, canvas.height / 2);
-        ctx.shadowBlur = 0;
-      }
-    }
-
-    function renderAssets(filter = "", cat = "all") {
+    function renderAssets(filter = "") {
       const grid = document.getElementById('assetsGrid');
       grid.innerHTML = "";
-      const filtered = assetsList.filter(a => {
-        const matchesQuery = a.name.toLowerCase().includes(filter.toLowerCase());
-        const matchesCat = (cat === "all" || a.cat === cat);
-        return matchesQuery && matchesCat;
-      });
-
-      filtered.forEach(asset => {
-        const item = document.createElement('div');
-        item.className = "flex-none w-24 h-24 bg-brandDark border border-borderDark rounded-lg p-1.5 flex flex-col items-center justify-between active:scale-95 cursor-pointer transition";
-        item.onclick = () => addAssetToCanvas(asset.url);
-        item.innerHTML = `
-          <img src="${asset.url}" class="w-16 h-14 object-cover rounded pointer-events-none">
-          <span class="text-[9px] text-gray-300 text-center truncate w-full">${asset.name}</span>
-        `;
-        grid.appendChild(item);
-      });
-    }
-
-    function addAssetToCanvas(url) {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        // Overlay Asset onto canvas
-        ctx.drawImage(img, canvas.width/2 - 300, canvas.height/2 - 300, 600, 600);
-      };
-      img.src = url;
-    }
-
-    function addTextPrompt() {
-      const input = prompt("Enter your thumbnail headline:", canvasText);
-      if (input !== null) {
-        canvasText = input.toUpperCase();
-        drawStudio();
-      }
-    }
-
-    function changeTextColor() {
-      const colors = ['#00F0FF', '#EF4444', '#F59E0B', '#10B981', '#A855F7', '#FFFFFF'];
-      const nextIndex = (colors.indexOf(textColor) + 1) % colors.length;
-      textColor = colors[nextIndex];
-      drawStudio();
-    }
-
-    function filterAssets() {
-      renderAssets(document.getElementById('assetSearch').value, document.getElementById('catSelect').value);
-    }
-
-    function setCategoryPreset(cat) {
-      filterAssets();
-    }
-
-    function handleImageUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          currentBgImage = img;
-          drawStudio();
-        };
-        img.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function clearCanvas() {
-      currentBgImage = null;
-      canvasText = "YOUR TITLE HERE";
-      textColor = "#00F0FF";
-      drawStudio();
-    }
-
-    function exportThumbnail() {
-      const link = document.createElement('a');
-      link.download = 'OmniStudio-HD-Thumbnail.png';
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
-    }
-
-    function playGuide(title, url) {
-      document.getElementById('modalTitle').innerText = title;
-      document.getElementById('modalIframe').src = url;
-      document.getElementById('videoModal').classList.remove('hidden');
-    }
-
-    function closeGuide() {
-      document.getElementById('modalIframe').src = "";
-      document.getElementById('videoModal').classList.add('hidden');
-    }
-
-    // Initialize
-    drawStudio();
-    renderAssets();
-  </script>
-</body>
-</html>
+      
+      const filtered = dbAssets.filter(a => 
+        a.name.toLowerCase().includes(filter.toLowerCase()) || 
+        
