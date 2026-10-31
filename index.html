@@ -2,8 +2,8 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OmniStudio - Pro Thumbnail Creator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OmniStudio - Mobile & Desktop Pro Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <script>
@@ -15,138 +15,109 @@
             brandDark: '#0B0F17',
             panelDark: '#111827',
             borderDark: '#1F293D',
-            gaming: '#EF4444',
-            food: '#F59E0B',
-            tech: '#3B82F6',
-            fitness: '#10B981',
-            finance: '#059669',
-            vlog: '#A855F7'
+            accentCyan: '#06B6D4'
           }
         }
       }
     }
   </script>
   <style>
-    body { background-color: #0B0F17; color: #F3F4F6; font-family: 'Inter', sans-serif; }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #111827; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1F293D; border-radius: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #374151; }
+    body { background-color: #0B0F17; color: #F3F4F6; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .canvas-container { aspect-ratio: 16/9; width: 100%; max-width: 960px; }
   </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
+<body class="h-screen flex flex-col justify-between overflow-hidden select-none">
 
-  <!-- TOP BAR / HEADER -->
-  <header class="h-14 bg-panelDark border-b border-borderDark flex items-center justify-between px-4 z-20">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center font-bold text-white shadow-lg">
+  <!-- TOP APP BAR -->
+  <header class="h-14 bg-panelDark border-b border-borderDark flex items-center justify-between px-3 z-30 shrink-0">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center font-bold text-white shadow-md">
         O
       </div>
-      <span class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">OmniStudio</span>
-      <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/50">1080p Engine Active</span>
+      <div>
+        <h1 class="text-sm font-bold text-white leading-none">OmniStudio</h1>
+        <span class="text-[9px] text-cyan-400 font-medium">Pro Mobile Studio</span>
+      </div>
     </div>
 
-    <!-- TUTORIAL VIDEO GUIDES BUTTONS -->
-    <div class="hidden md:flex items-center gap-2">
-      <span class="text-xs text-gray-400 mr-1"><i class="fa-solid fa-circle-play text-red-500 mr-1"></i> Video Guides:</span>
-      <button onclick="openVideoModal('Gaming Pro Tutorial', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="text-xs px-2.5 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition">🎮 Gaming</button>
-      <button onclick="openVideoModal('Food Vlogging Guide', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="text-xs px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">🍔 Food</button>
-      <button onclick="openVideoModal('Tech Review Polish', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="text-xs px-2.5 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition">📱 Tech</button>
-      <button onclick="openVideoModal('Fitness Transformation', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="text-xs px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">🏋️ Fitness</button>
-    </div>
-
-    <div class="flex items-center gap-3">
-      <label class="text-xs bg-slate-800 hover:bg-slate-700 text-white font-medium px-3 py-1.5 rounded cursor-pointer transition border border-gray-700">
-        <i class="fa-solid fa-upload mr-1"></i> Remix/Upload
-        <input type="file" id="uploadImage" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+    <div class="flex items-center gap-2">
+      <label class="text-xs bg-gray-800 active:bg-gray-700 text-gray-200 px-2.5 py-1.5 rounded-lg border border-borderDark flex items-center gap-1 cursor-pointer">
+        <i class="fa-solid fa-cloud-arrow-up text-cyan-400"></i>
+        <span>Remix</span>
+        <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
       </label>
-      <button onclick="exportThumbnail()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded shadow-lg shadow-blue-600/30 transition flex items-center gap-1">
-        <i class="fa-solid fa-download"></i> Download 1080p
+      <button onclick="exportThumbnail()" class="text-xs bg-cyan-600 active:bg-cyan-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow-lg shadow-cyan-600/30 flex items-center gap-1">
+        <i class="fa-solid fa-download"></i> 1080p
       </button>
-      <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-1 rounded">4K (Soon)</span>
     </div>
   </header>
 
-  <!-- MAIN WORKSPACE -->
-  <div class="flex-1 flex overflow-hidden">
+  <!-- AUTO-PLAYING VIDEO TUTORIALS STRIP -->
+  <section class="bg-brandDark border-b border-borderDark p-2 overflow-x-auto no-scrollbar flex items-center gap-3 shrink-0">
+    <span class="text-[10px] uppercase font-bold text-gray-400 whitespace-nowrap pl-1"><i class="fa-solid fa-circle-play text-red-500 mr-1"></i> Guides:</span>
+    
+    <div onclick="playGuide('Gaming Guide', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="flex-none bg-panelDark border border-borderDark rounded-md p-1 flex items-center gap-2 pr-3 cursor-pointer">
+      <div class="w-8 h-6 bg-red-900/50 rounded flex items-center justify-center text-red-400 text-xs"><i class="fa-solid fa-play"></i></div>
+      <span class="text-xs text-gray-200 whitespace-nowrap">Gaming Lighting</span>
+    </div>
 
-    <!-- LEFT SIDEBAR: CATEGORIES -->
-    <aside class="w-20 bg-panelDark border-r border-borderDark flex flex-col items-center py-4 gap-4 z-10">
-      <button onclick="setCategory('gaming')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-red-400 transition">
-        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-red-500/20 border border-gray-700 group-hover:border-red-500/50 flex items-center justify-center">
-          <i class="fa-solid fa-gamepad text-lg"></i>
-        </div>
-        <span class="text-[10px]">Gaming</span>
-      </button>
+    <div onclick="playGuide('Food Styling', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="flex-none bg-panelDark border border-borderDark rounded-md p-1 flex items-center gap-2 pr-3 cursor-pointer">
+      <div class="w-8 h-6 bg-amber-900/50 rounded flex items-center justify-center text-amber-400 text-xs"><i class="fa-solid fa-play"></i></div>
+      <span class="text-xs text-gray-200 whitespace-nowrap">Food Plating 3D</span>
+    </div>
 
-      <button onclick="setCategory('food')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-amber-400 transition">
-        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-amber-500/20 border border-gray-700 group-hover:border-amber-500/50 flex items-center justify-center">
-          <i class="fa-solid fa-utensils text-lg"></i>
-        </div>
-        <span class="text-[10px]">Food</span>
-      </button>
+    <div onclick="playGuide('Tech Polish', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="flex-none bg-panelDark border border-borderDark rounded-md p-1 flex items-center gap-2 pr-3 cursor-pointer">
+      <div class="w-8 h-6 bg-blue-900/50 rounded flex items-center justify-center text-blue-400 text-xs"><i class="fa-solid fa-play"></i></div>
+      <span class="text-xs text-gray-200 whitespace-nowrap">Tech Glow Effects</span>
+    </div>
+  </section>
 
-      <button onclick="setCategory('tech')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-blue-400 transition">
-        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-blue-500/20 border border-gray-700 group-hover:border-blue-500/50 flex items-center justify-center">
-          <i class="fa-solid fa-mobile-screen-button text-lg"></i>
-        </div>
-        <span class="text-[10px]">Tech</span>
-      </button>
+  <!-- WORKSPACE / CANVAS AREA -->
+  <main class="flex-1 bg-brandDark p-2 flex flex-col items-center justify-center relative overflow-hidden">
+    <!-- CANVAS -->
+    <div class="canvas-container bg-black rounded-lg border border-borderDark shadow-2xl overflow-hidden relative">
+      <canvas id="thumbnailCanvas" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
+    </div>
 
-      <button onclick="setCategory('fitness')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-emerald-400 transition">
-        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-emerald-500/20 border border-gray-700 group-hover:border-emerald-500/50 flex items-center justify-center">
-          <i class="fa-solid fa-dumbbell text-lg"></i>
-        </div>
-        <span class="text-[10px]">Fitness</span>
-      </button>
+    <!-- QUICK TOUCH CONTROLS -->
+    <div class="flex items-center gap-2 mt-3">
+      <button onclick="addText()" class="text-xs bg-panelDark border border-borderDark px-3 py-1.5 rounded-lg text-gray-200 active:bg-gray-800"><i class="fa-solid fa-font mr-1 text-cyan-400"></i> Add Text</button>
+      <button onclick="clearCanvas()" class="text-xs bg-panelDark border border-borderDark px-3 py-1.5 rounded-lg text-gray-200 active:bg-gray-800"><i class="fa-solid fa-rotate-left mr-1 text-red-400"></i> Reset</button>
+    </div>
+  </main>
 
-      <button onclick="setCategory('vlog')" class="flex flex-col items-center gap-1 group text-gray-400 hover:text-purple-400 transition">
-        <div class="w-10 h-10 rounded-xl bg-gray-800 group-hover:bg-purple-500/20 border border-gray-700 group-hover:border-purple-500/50 flex items-center justify-center">
-          <i class="fa-solid fa-camera text-lg"></i>
-        </div>
-        <span class="text-[10px]">Vlog</span>
-      </button>
-    </aside>
-
-    <!-- CENTER CANVAS EDITOR -->
-    <main class="flex-1 bg-brandDark p-6 flex flex-col items-center justify-center relative overflow-auto">
-      <!-- CANVAS CONTROLS -->
-      <div class="mb-3 flex items-center gap-3 bg-panelDark px-4 py-2 rounded-lg border border-borderDark text-xs">
-        <button onclick="addText()" class="hover:text-cyan-400 transition"><i class="fa-solid fa-font mr-1"></i> Add Text</button>
-        <span class="text-gray-600">|</span>
-        <button onclick="clearCanvas()" class="hover:text-red-400 transition"><i class="fa-solid fa-trash mr-1"></i> Clear All</button>
+  <!-- BOTTOM DRAWER PANEL (ASSETS & CATEGORIES) -->
+  <div id="bottomDrawer" class="bg-panelDark border-t border-borderDark h-48 flex flex-col shrink-0">
+    <!-- SEARCH & CATEGORY FILTER -->
+    <div class="p-2 border-b border-borderDark flex items-center gap-2">
+      <div class="relative flex-1">
+        <input type="text" id="assetSearch" oninput="filterAssets()" placeholder="Search 3D models..." class="w-full bg-brandDark text-xs text-gray-200 pl-7 pr-3 py-1.5 rounded-md border border-borderDark focus:outline-none focus:border-cyan-500">
+        <i class="fa-solid fa-magnifying-glass absolute left-2 top-2 text-[10px] text-gray-500"></i>
       </div>
+      <select onchange="setCategory(this.value)" class="bg-brandDark text-xs text-cyan-400 px-2 py-1.5 rounded-md border border-borderDark focus:outline-none">
+        <option value="gaming">🎮 Gaming</option>
+        <option value="food">🍔 Food</option>
+        <option value="tech">📱 Tech</option>
+        <option value="fitness">🏋️ Fitness</option>
+      </select>
+    </div>
 
-      <!-- MAIN CANVAS CONTAINER -->
-      <div class="relative shadow-2xl rounded-lg overflow-hidden border border-borderDark bg-black" style="width: 854px; height: 480px;">
-        <canvas id="thumbnailCanvas" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
-      </div>
-      <p class="text-[11px] text-gray-500 mt-2">1080p High-Resolution Preview Rendered Live</p>
-    </main>
-
-    <!-- RIGHT SIDEBAR: REALISTIC 3D ASSETS SEARCH -->
-    <aside class="w-80 bg-panelDark border-l border-borderDark flex flex-col custom-scrollbar overflow-y-auto p-4 z-10">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">3D Realistic Asset Library</h3>
-      
-      <!-- SEARCH BOX -->
-      <div class="relative mb-4">
-        <input type="text" id="assetSearch" oninput="filterAssets()" placeholder="Search 3D models, props, objects..." class="w-full bg-brandDark text-xs text-gray-200 pl-8 pr-3 py-2 rounded-lg border border-borderDark focus:outline-none focus:border-cyan-500 transition">
-        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-xs text-gray-500"></i>
-      </div>
-
-      <!-- ASSETS GRID -->
-      <div id="assetsGrid" class="grid grid-cols-2 gap-2">
-        <!-- JS populates realistic assets here -->
-      </div>
-    </aside>
+    <!-- ASSET HORIZONTAL SCROLL GRID -->
+    <div id="assetsGrid" class="flex-1 p-2 overflow-x-auto no-scrollbar flex items-center gap-3">
+      <!-- Dynamic Assets Here -->
+    </div>
   </div>
 
-  <!-- VIDEO MODAL -->
-  <div id="videoModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden">
-    <div class="bg-panelDark border border-borderDark rounded-xl w-11/12 max-w-3xl p-4 relative">
-      <button onclick="closeVideoModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-      <h3 id="modalTitle" class="text-sm font-bold text-white mb-3">Video Guide</h3>
-      <div class="aspect-video w-full rounded-lg overflow-hidden border border-borderDark">
+  <!-- VIDEO MODAL PLAYER -->
+  <div id="videoModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-panelDark border border-borderDark rounded-xl w-full max-w-lg p-3 relative">
+      <div class="flex items-center justify-between mb-2">
+        <h3 id="modalTitle" class="text-xs font-bold text-white">Guide Player</h3>
+        <button onclick="closeGuide()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+      </div>
+      <div class="aspect-video w-full rounded-lg overflow-hidden bg-black">
         <iframe id="modalIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
       </div>
     </div>
@@ -155,26 +126,22 @@
   <script>
     const canvas = document.getElementById('thumbnailCanvas');
     const ctx = canvas.getContext('2d');
-    
-    // Sample Assets Data
-    const assetData = [
-      { name: "3D Gaming Chair", cat: "gaming", url: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&auto=format&fit=crop&q=60" },
-      { name: "Gourmet Burger", cat: "food", url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop&q=60" },
-      { name: "Smartphone 3D", cat: "tech", url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&auto=format&fit=crop&q=60" },
-      { name: "3D Dumbbell", cat: "fitness", url: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=60" },
-      { name: "Neon Arrow", cat: "vlog", url: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&auto=format&fit=crop&q=60" }
-    ];
 
-    let currentBg = null;
-    let textElements = [];
+    const assetData = [
+      { name: "3D Gaming Chair", url: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=300&q=80" },
+      { name: "Gourmet Burger", url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&q=80" },
+      { name: "Smartphone 3D", url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&q=80" },
+      { name: "3D Dumbbell", url: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=300&q=80" },
+      { name: "Neon Arrow", url: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=300&q=80" }
+    ];
 
     function initCanvas() {
       ctx.fillStyle = '#111827';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#374151';
-      ctx.font = 'bold 48px Inter, sans-serif';
+      ctx.font = 'bold 50px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('SELECT A CATEGORY OR UPLOAD AN IMAGE TO START', canvas.width / 2, canvas.height / 2);
+      ctx.fillText('SELECT CATEGORY OR UPLOAD IMAGE', canvas.width / 2, canvas.height / 2);
     }
 
     function renderAssets(filter = "") {
@@ -182,11 +149,11 @@
       grid.innerHTML = "";
       assetData.filter(a => a.name.toLowerCase().includes(filter.toLowerCase())).forEach(asset => {
         const item = document.createElement('div');
-        item.className = "bg-brandDark border border-borderDark p-2 rounded-lg hover:border-cyan-500 cursor-pointer transition flex flex-col items-center";
+        item.className = "flex-none w-24 h-24 bg-brandDark border border-borderDark rounded-lg p-1.5 flex flex-col items-center justify-between active:border-cyan-500 cursor-pointer";
         item.onclick = () => addAssetToCanvas(asset.url);
         item.innerHTML = `
-          <img src="${asset.url}" class="w-20 h-20 object-cover rounded mb-1">
-          <span class="text-[10px] text-gray-300 text-center truncate w-full">${asset.name}</span>
+          <img src="${asset.url}" class="w-16 h-14 object-cover rounded">
+          <span class="text-[9px] text-gray-300 text-center truncate w-full">${asset.name}</span>
         `;
         grid.appendChild(item);
       });
@@ -196,30 +163,23 @@
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
-        ctx.drawImage(img, 100, 100, 400, 400);
+        ctx.drawImage(img, canvas.width/4, canvas.height/4, 600, 600);
       };
       img.src = url;
     }
 
     function filterAssets() {
-      const query = document.getElementById('assetSearch').value;
-      renderAssets(query);
+      renderAssets(document.getElementById('assetSearch').value);
     }
 
     function setCategory(cat) {
-      const colors = {
-        gaming: '#EF4444',
-        food: '#F59E0B',
-        tech: '#3B82F6',
-        fitness: '#10B981',
-        vlog: '#A855F7'
-      };
+      const colors = { gaming: '#EF4444', food: '#F59E0B', tech: '#3B82F6', fitness: '#10B981' };
       ctx.fillStyle = '#0B0F17';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = colors[cat] || '#3B82F6';
-      ctx.font = 'bold 80px Inter, sans-serif';
+      ctx.fillStyle = colors[cat] || '#06B6D4';
+      ctx.font = 'bold 90px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(cat.toUpperCase() + ' THUMBNAIL STUDIO', canvas.width / 2, canvas.height / 2);
+      ctx.fillText(cat.toUpperCase() + ' STUDIO', canvas.width / 2, canvas.height / 2);
     }
 
     function handleImageUpload(e) {
@@ -228,48 +188,44 @@
       const reader = new FileReader();
       reader.onload = (event) => {
         const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
+        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }
 
     function addText() {
-      const text = prompt("Enter text:", "NEW VIDEO!");
+      const text = prompt("Enter text:", "VIRAL TITLE");
       if (!text) return;
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 90px Inter, sans-serif';
-      ctx.shadowColor = 'rgba(0,0,0,0.8)';
-      ctx.shadowBlur = 20;
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 100);
+      ctx.font = 'bold 110px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 30;
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 80);
       ctx.shadowBlur = 0;
     }
 
-    function clearCanvas() {
-      initCanvas();
-    }
+    function clearCanvas() { initCanvas(); }
 
     function exportThumbnail() {
       const link = document.createElement('a');
-      link.download = 'OmniStudio-Thumbnail-1080p.png';
+      link.download = 'OmniStudio-Mobile.png';
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
     }
 
-    function openVideoModal(title, url) {
+    function playGuide(title, url) {
       document.getElementById('modalTitle').innerText = title;
       document.getElementById('modalIframe').src = url;
       document.getElementById('videoModal').classList.remove('hidden');
     }
 
-    function closeVideoModal() {
+    function closeGuide() {
       document.getElementById('modalIframe').src = "";
       document.getElementById('videoModal').classList.add('hidden');
     }
 
-    // Initialize on load
     initCanvas();
     renderAssets();
   </script>
